@@ -96,7 +96,7 @@ $fruit_name = $bdb->selec("name")->from("fruits")->where("id_fruit =", $id_fruit
 
 This protects you from SQL injection attacks and enable the possibility of use prepared statements (see below).
 
-**++/!\\++ WARNING 1**: Variables inside strings are not checked and makes your code vulnerable. Extract them. **ALWAYS**.
+**/!\ WARNING 1**: Variables inside strings are not checked and makes your code vulnerable. Extract them. **ALWAYS**.
 
 Repeat with me: **A-L-W-A-Y-S**.
 
@@ -161,9 +161,9 @@ $bdb->update("fruits")->set("name = ", $name)->where("id_fruit = ", $id_fruit)->
 
 And don't cry anymore. Don't worry about SQL injections :)
 
-**++/!\\++ WARNING 2**: Don't forget to add the equal character after the field name when you are updating. **Just like MySQL** is our motto.
+**/!\ WARNING 2**: Don't forget to add the equal character after the field name when you are updating. **Just like MySQL** is our motto.
 
-**++/!\\++ WARNING 1 (AGAIN)**: Remember that variables inside strings are not checked. Use a single parameter for each variable, like in examples.
+**/!\ WARNING 1 (AGAIN)**: Remember that variables inside strings are not checked. Use a single parameter for each variable, like in examples.
 
 ##### Updating more than one field with variables (PHP 5.4+ Version) [RECOMMENDED]
 
@@ -237,7 +237,7 @@ foreach($fruits as $fruit_name)
 
 You can use the REF function for any field, for any query (insert, update...). Simply change the value and call to the exec method again.
 
-BananaDB does ++**NOT** send the full query to MySQL++. BananaDB creates a ++prepared statement++, making the repetitive execution very fast. The param binding and all tricky things are automatically managed for you.
+BananaDB does **not send the full query to MySQL**. BananaDB creates a **prepared statement**, making the repetitive execution very fast. The param binding and all tricky things are automatically managed for you.
 
 For more information about prepared statements read: http://php.net/manual/en/pdo.prepared-statements.php
 
