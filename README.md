@@ -283,7 +283,7 @@ $db=BananaDB::getInstance(); //returns the non-static instance (the last created
 Useful for instant access to the database on any place:
 
 ```php
-BananaDB::getInstance()->update("fruits")->set("quantity = 50")->where("id_fruit =", $id_tomato);
+BananaDB::getInstance()->update("fruits")->set("quantity = 50")->where("id_fruit =", $id_tomato)->exec();
 ```
 
 ##For the future
