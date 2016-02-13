@@ -47,8 +47,15 @@ class BDB
    }
    public function getLastId()       {return $this->mysqli?$this->mysqli->insert_id:false;}
    public function getAffectedRows() {return $this->mysqli?$this->mysqli->affected_rows:false;}
+   //Static way
+   public static function getInstance() {return BDB::$last_instance;}
+   public static function init($host, $user, $password, $database)
+   {
+      new BDB($host, $user, $password, $database);
+   }
    //Here the magic begins...
    public $mysqli=0x0;
+   public static $last_instance=0x0;
    //========================
    //Reset the current state when the object needs to be ready for a new query
    private function reset()
@@ -60,7 +67,7 @@ class BDB
       $this->query_string="";
    }
    //========================
-   public function connect($host, $user, $password, $database)
+   private function connect($host, $user, $password, $database)
    {
       if(!$this->mysqli)
       {
@@ -68,6 +75,7 @@ class BDB
          if($this->mysqli->connect_errno)
             throw new Exception("BananaDB - Connection Error [".$this->mysqli->connect_errno."]: ".$this->mysqli->connect_error);
          $this->mysqli->set_charset("utf8");
+         BDB::$last_instance=$this;
       }
    }
    public function __construct($host, $user, $password, $database)

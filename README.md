@@ -96,7 +96,7 @@ $fruit_name = $bdb->selec("name")->from("fruits")->where("id_fruit =", $id_fruit
 
 This protects you from SQL injection attacks and enable the possibility of use prepared statements (see below).
 
-**/!\ WARNING 1**: Variables inside strings are not checked and makes your code vulnerable. Extract them. **ALWAYS**.
+**WARNING 1**: Variables inside strings are not checked and makes your code vulnerable. Extract them. **ALWAYS**.
 
 Repeat with me: **A-L-W-A-Y-S**.
 
@@ -161,9 +161,9 @@ $bdb->update("fruits")->set("name = ", $name)->where("id_fruit = ", $id_fruit)->
 
 And don't cry anymore. Don't worry about SQL injections :)
 
-**/!\ WARNING 2**: Don't forget to add the equal character after the field name when you are updating. **Just like MySQL** is our motto.
+**WARNING 2**: Don't forget to add the equal character after the field name when you are updating. **Just like MySQL** is our motto.
 
-**/!\ WARNING 1 (AGAIN)**: Remember that variables inside strings are not checked. Use a single parameter for each variable, like in examples.
+**WARNING 1 (AGAIN)**: Remember that variables inside strings are not checked. Use a single parameter for each variable, like in examples.
 
 ##### Updating more than one field with variables (PHP 5.4+ Version) [RECOMMENDED]
 
@@ -268,6 +268,23 @@ $bdb->select("*")->from("fruits")->order_by("color desc", "name asc")->limit("2,
 ```
 
 I hope you get the idea.
+
+## The Static Way
+
+You can use the library invoking the last created object directly:
+
+```php
+BananaDB::init($host, $user, $password, $database); //Init a new Static Database
+$db=BananaDB::getInstance(); //returns the static instance (the last created)
+$another_database=new BananaDB($host, $user, $password, $database);
+$db=BananaDB::getInstance(); //returns the non-static instance (the last created)
+```
+
+Useful for instant access to the database on any place:
+
+```php
+BananaDB::getInstance()->update("fruits")->set("quantity = 50")->where("id_fruit =", $id_tomato);
+```
 
 ##For the future
 
