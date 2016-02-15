@@ -129,6 +129,18 @@ class BDB
       $this->chain[]="insert into $table";
    }
    //========================
+   private function lan_duplicate_key($values)
+   {
+      $this->chain[] = " on duplicate key update ";
+      $valueString = '';
+      foreach ($values as $value)
+      {
+         $valueString .= "$value[0]=$value[1],";
+      }
+      $valueString = rtrim($valueString, ',');
+      $this->chain[] = $valueString;
+   }
+   //========================
    private function lan_update($table)
    {
       $this->reset();
@@ -362,6 +374,9 @@ class BDB
             return $this;
          case 'insert_into':
             $this->lan_insert($args[0]);
+            return $this;
+         case 'on_duplicate_key_update':
+            $this->lan_duplicate_key($args);
             return $this;
          case 'values':
             $this->lan_values($args);

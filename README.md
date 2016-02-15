@@ -198,6 +198,14 @@ $bdb->insert_into("fruits")->values( array("name", $name), array("price", 5.3) )
 
 Don't use the equal character in your insertions. Again, just like MySQL.
 
+## Insert OR Update
+
+```php
+$bdb->insert_into("fruits")->values(null, "tomato", 4.2, $my_variable)->on_duplicate_key_update(['price', 4.2])->exec();
+```
+This requires a unique index.
+Read more about [On Duplicate Key Update](http://dev.mysql.com/doc/refman/5.7/en/insert-on-duplicate.html)
+
 ## Escape from the cage
 
 All values are passed to MySQL as strings, if you need to execute some MySQL functions, please, escape them with ! character and BananaDB will send the text to MySQL in raw mode, without quotes, out of a string.
