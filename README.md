@@ -79,7 +79,7 @@ You can execute your query with:
 - **exec_one_field**: returns the first value, of the first row, of the result.
 
 ```php
-$fruit_name = $bdb->selec("name")->from("fruits")->where("id_fruit = 5")->and("active = 1")->exec_one_field();
+$fruit_name = $bdb->select("name")->from("fruits")->where("id_fruit = 5")->and("active = 1")->exec_one_field();
 ```
 
 Get values in only one line. As it always should be.
@@ -91,7 +91,7 @@ In order to use variables in your query, you need to extract them from the strin
 ```php
 $id_fruit = 5;
 $color = "red";
-$fruit_name = $bdb->selec("name")->from("fruits")->where("id_fruit =", $id_fruit)->and("active = 1")->or("color =", $color)->exec_one_field();
+$fruit_name = $bdb->select("name")->from("fruits")->where("id_fruit =", $id_fruit)->and("active = 1")->or("color =", $color)->exec_one_field();
 ```
 
 This protects you from SQL injection attacks and enable the possibility of use prepared statements (see below).
@@ -102,10 +102,10 @@ Repeat with me: **A-L-W-A-Y-S**.
 
 ```php
 //Right, perfect, wonderful :)
-$fruit_name = $bdb->selec("name")->from("fruits")->where("id_fruit =", $id_fruit)->exec_one_field();
+$fruit_name = $bdb->select("name")->from("fruits")->where("id_fruit =", $id_fruit)->exec_one_field();
 
 //WRONG!! NEVER!! SIN!! APOCALYPSE!! THE END OF THE WORLD!!
-$fruit_name = $bdb->selec("name")->from("fruits")->where("id_fruit = $id_fruit")->exec_one_field();
+$fruit_name = $bdb->select("name")->from("fruits")->where("id_fruit = $id_fruit")->exec_one_field();
 ```
 
 ### Learn more about select with one example
