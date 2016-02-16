@@ -201,7 +201,7 @@ Don't use the equal character in your insertions. Again, just like MySQL.
 ## Insert OR Update
 
 ```php
-$bdb->insert_into("fruits")->values(null, "tomato", 4.2, $my_variable)->on_duplicate_key_update(['price', 4.2])->exec();
+$bdb->insert_into("fruits")->values(null, "tomato", 4.2, $my_variable)->on_duplicate_key_update(['price =', 4.2])->exec();
 ```
 This requires a unique index.
 Read more about [On Duplicate Key Update](http://dev.mysql.com/doc/refman/5.7/en/insert-on-duplicate.html)
