@@ -135,10 +135,9 @@ class BDB
       $valueString = '';
       foreach ($values as $value)
       {
-         $valueString .= "$value[0]=$value[1],";
+         $valueString .= "$value[0]$value[1],";
       }
-      $valueString = rtrim($valueString, ',');
-      $this->chain[] = $valueString;
+      $this->chain[] = rtrim($valueString, ',');
    }
    //========================
    private function lan_update($table)
