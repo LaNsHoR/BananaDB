@@ -148,6 +148,11 @@ or you can use more than one parameter (on this way you don't need to add quotes
 ```php
 $bdb->update("fruits")->set("name =", "coconut")->where("id_fruit = 5")->exec();
 ```
+another example with expression before assignation
+
+```php
+$bdb->update("fruits")->set("quantity = quantity +", $new_quantity)->where("id_fruit = 5")->exec();
+```
 
 Example with external data (with variables):
 
@@ -168,7 +173,7 @@ And don't cry anymore. Don't worry about SQL injections :)
 ##### Updating more than one field with variables (PHP 5.4+ Version) [RECOMMENDED]
 
 ```php
-$bdb->update("fruits")->set( ["active =", $active], ["name =", $name] )->where("id_fruit = 5")->exec();
+$bdb->update("fruits")->set( ["active =", $active], ["name =", $name], ["quantity = $quantity +", $new_quantity] )->where("id_fruit = 5")->exec();
 ```
 
 ##### Updating more than one field with variables (All PHP Versions)
@@ -198,12 +203,20 @@ $bdb->insert_into("fruits")->values( array("name", $name), array("price", 5.3) )
 
 Don't use the equal character in your insertions. Again, just like MySQL.
 
-## Insert OR Update
+## On duplicate key update
+
+You can use "on duplicate key update" directive in the same way that a simple update:
 
 ```php
-$bdb->insert_into("fruits")->values(null, "tomato", 4.2, $my_variable)->on_duplicate_key_update(['price =', 4.2])->exec();
+$bdb->insert_into("fruits")->values(5, "tomato", 4.2, $price)->on_duplicate_key_update('price =', $new_price)->exec();
 ```
-This requires a unique index.
+
+or
+
+```php
+$bdb->insert_into("fruits(id_fruit, price, quantity)")->values(10, $price, $quantity)->on_duplicate_key_update(["price =", $price],["quantity = quantity +", $quantity])->exec();
+```
+
 Read more about [On Duplicate Key Update](http://dev.mysql.com/doc/refman/5.7/en/insert-on-duplicate.html)
 
 ## Escape from the cage

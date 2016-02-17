@@ -129,15 +129,10 @@ class BDB
       $this->chain[]="insert into $table";
    }
    //========================
-   private function lan_duplicate_key($values)
+   private function lan_duplicate_key($sets_array)
    {
       $this->chain[] = " on duplicate key update ";
-      $valueString = '';
-      foreach ($values as $value)
-      {
-         $valueString .= "$value[0]$value[1],";
-      }
-      $this->chain[] = rtrim($valueString, ',');
+      $this->set_values($sets_array);
    }
    //========================
    private function lan_update($table)
@@ -224,6 +219,11 @@ class BDB
    private function lan_set($sets_array)
    {
       $this->chain[]="set ";
+      $this->set_values($sets_array);
+   }
+   //========================
+   private function set_values($sets_array) //update values from 'set', 'on duplicate key'...
+   {
       //Format 1: set("field = literal")
       if(!is_array($sets_array[0]) && !isset($sets_array[1]))
       {
