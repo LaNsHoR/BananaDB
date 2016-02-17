@@ -129,6 +129,12 @@ class BDB
       $this->chain[]="insert into $table";
    }
    //========================
+   private function lan_duplicate_key($sets_array)
+   {
+      $this->chain[] = " on duplicate key update ";
+      $this->set_values($sets_array);
+   }
+   //========================
    private function lan_update($table)
    {
       $this->reset();
@@ -213,6 +219,11 @@ class BDB
    private function lan_set($sets_array)
    {
       $this->chain[]="set ";
+      $this->set_values($sets_array);
+   }
+   //========================
+   private function set_values($sets_array) //update values from 'set', 'on duplicate key'...
+   {
       //Format 1: set("field = literal")
       if(!is_array($sets_array[0]) && !isset($sets_array[1]))
       {
@@ -362,6 +373,9 @@ class BDB
             return $this;
          case 'insert_into':
             $this->lan_insert($args[0]);
+            return $this;
+         case 'on_duplicate_key_update':
+            $this->lan_duplicate_key($args);
             return $this;
          case 'values':
             $this->lan_values($args);
