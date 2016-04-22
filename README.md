@@ -108,6 +108,17 @@ $fruit_name = $bdb->select("name")->from("fruits")->where("id_fruit =", $id_frui
 $fruit_name = $bdb->select("name")->from("fruits")->where("id_fruit = $id_fruit")->exec_one_field();
 ```
 
+### Joins
+
+```php
+$bdb->select("*")->from("fruits f")->left_join("prices p")->on("f.id_fruit = p.id_fruit")->and("value >=", $min_value)->exec();
+```
+
+The same for right_join.
+
+Use (left|right)_join in the same way that from. Use ON in the same way that (where|and|or).
+
+
 ### Learn more about select with one example
 
 ```php
@@ -311,10 +322,9 @@ BananaDB::getInstance()->update("fruits")->set("quantity = 50")->where("id_fruit
 
 TODO:
 
-1. **Joins** support
-2. **Not In** support
-3. **Sub-queries** support
-4. **Transactions** support
+1. **Not In** support
+2. **Sub-queries** support
+3. **Transactions** support
 
 ## Bugs, comments, and more...
 

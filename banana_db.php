@@ -55,16 +55,21 @@ class BDB
    }
    //Here the magic begins...
    public $mysqli=0x0;
+   public $pending_exec=false;
+   public static $instances=array();
    public static $last_instance=0x0;
    //========================
    //Reset the current state when the object needs to be ready for a new query
    private function reset()
    {
+      if($this->pending_exec)
+         trigger_error("Execution not called at BananaDB instance. Do you forget to do '->exec()'?");
       $this->values=array();
       $this->chain=array();
       $this->values=array();
       $this->query_type="";
       $this->query_string="";
+      $this->pending_exec=false;
    }
    //========================
    private function connect($host, $user, $password, $database)
@@ -82,22 +87,24 @@ class BDB
    {
       $this->connect($host, $user, $password, $database);
       $this->reset();
+      BDB::$instances[]=$this;
    }
    //========================
    private function lan_select($field_list)
    {
       $this->reset();
+      $this->pending_exec=true;
       $this->query_type="select";
       $this->chain[]="select";
       foreach($field_list as $index => $field)
          $this->chain[]=($index?", ":" ").$field;
    }
    //========================
-   private function lan_from($field_list)
+   private function lan_from($table_list)
    {
       $this->chain[]=" from ";
-      foreach($field_list as $index => $field)
-         $this->chain[]=($index?", ":" ").$field;
+      foreach($table_list as $index => $table)
+         $this->chain[]=($index?", ":" ").$table;
    }
    //========================
    private function lan_condition($op, $condition, $value)
@@ -111,13 +118,28 @@ class BDB
       }
    }
    //========================
+   private function lan_left_join($table_list)
+   {
+      $this->chain[]=" left join ";
+      foreach($table_list as $index => $table)
+         $this->chain[]=($index?", ":" ").$table;
+   }
+   private function lan_right_join($table_list)
+   {
+      $this->chain[]=" right join ";
+      foreach($table_list as $index => $table)
+         $this->chain[]=($index?", ":" ").$table;
+   }
+   //========================
    private function lan_where($condition, $value=NULL) {$this->lan_condition("where", $condition, $value);}
    private function lan_and($condition, $value=NULL)   {$this->lan_condition("and", $condition, $value);}
    private function lan_or($condition, $value=NULL)    {$this->lan_condition("or", $condition, $value);}
+   private function lan_on($condition, $value=NULL)    {$this->lan_condition("on", $condition, $value);}
    //========================
    private function lan_delete($value)
    {  	
       $this->reset();
+      $this->pending_exec=true;
       $this->query_type="delete";
       $this->chain[]="delete from $value";
    }
@@ -125,6 +147,7 @@ class BDB
    private function lan_insert($table)
    {
       $this->reset();
+      $this->pending_exec=true;
       $this->query_type="insert";
       $this->chain[]="insert into $table";
    }
@@ -138,6 +161,7 @@ class BDB
    private function lan_update($table)
    {
       $this->reset();
+      $this->pending_exec=true;
       $this->query_type="update";
       $this->chain[]="update $table ";
    }
@@ -299,6 +323,7 @@ class BDB
    }
    public function exec()
    {
+      $this->pending_exec = false;
       $query=$this->commonExecutionSteps();
       if($this->query_type=="select")
       {
@@ -326,10 +351,15 @@ class BDB
          return true;
       }
    }
-   public function exec_one_line()
+   public function exec_one_row()
    {
       $result=$this->exec();
       return $result ? $result[0] : false;
+   }
+   public function exec_one_line()
+   {
+      trigger_error('BananaDB Warning: exec_one_line is deprecated. Please, use exec_one_row instead.');
+      return $this->exec_one_row();
    }
    public function exec_one_field()
    {
@@ -350,6 +380,12 @@ class BDB
          case 'from':
             $this->lan_from($args);
             return $this;
+         case 'left_join':
+            $this->lan_left_join($args);
+            return $this;
+         case 'right_join':
+            $this->lan_right_join($args);
+            return $this;
          case 'where': //where("x >", $x) or where("x = x")
             if(count($args)>1)
                $this->lan_where($args[0], $args[1]);
@@ -367,6 +403,12 @@ class BDB
                $this->lan_or($args[0], $args[1]);
             else
                $this->lan_or($args[0]);
+            return $this;
+         case 'on':
+            if(count($args)>1)
+               $this->lan_on($args[0], $args[1]);
+            else
+               $this->lan_on($args[0]);
             return $this;
          case 'order_by':
             $this->lan_order_by($args);
@@ -414,3 +456,12 @@ class BDB
 }
 
 class_alias("BDB", "BananaDB");
+
+register_shutdown_function(function()
+{
+   foreach(BDB::$instances as $instance)
+   {
+      if($instance->pending_exec)
+         trigger_error("Execution not called at BananaDB instance. Do you forget to do '->exec()'?");
+   }
+});
